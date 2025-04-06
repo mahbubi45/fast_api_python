@@ -3,6 +3,7 @@ from controller.user_controller import UserController
 from request.users_request import LogInRequest, RegisterRequest
 from helper.hashed_password import hashingPasswordHelper
 from auth.csrf import CsrfSettings, generate_csrf
+from set_middleware.verify_csrf import verify_csrf
 from fastapi_csrf_protect import CsrfProtect
 
 router = APIRouter()
@@ -15,6 +16,10 @@ class UserRoutes:
     @router.get("/csrf", status_code=200)
     def get_csrf(csrf_protect: CsrfProtect = Depends()):
         return generate_csrf(csrf_protect)
+    
+    @router.get("/check-csrf", status_code=200)
+    def secure_data(csrf_protected: None = Depends(verify_csrf)):
+        return {"message": "CSRF check passed. Secure data posted!"}
 
     @router.post("/register", status_code=200)
     def register(request: RegisterRequest):

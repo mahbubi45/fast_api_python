@@ -1,16 +1,21 @@
-from fastapi import APIRouter # type: ignore
+from fastapi import APIRouter, Depends # type: ignore
 from controller.user_controller import UserController
 from request.users_request import LogInRequest, RegisterRequest
 from helper.hashed_password import hashingPasswordHelper
+from auth.csrf import CsrfSettings, generate_csrf
+from fastapi_csrf_protect import CsrfProtect
 
 router = APIRouter()
-
 
 class UserRoutes:
     @router.get("/root", status_code=200)
     def read_root():
         return UserController.status_server()
     
+    @router.get("/csrf", status_code=200)
+    def get_csrf(csrf_protect: CsrfProtect = Depends()):
+        return generate_csrf(csrf_protect)
+
     @router.post("/register", status_code=200)
     def register(request: RegisterRequest):
         hashingPassword = hashingPasswordHelper(request.password)

@@ -2,7 +2,7 @@ from fastapi import FastAPI, status # type: ignore
 from database import mydb
 from response.response import Responses
 from helper.hashed_password import chekHashingPassword
-from jwt_token.token import created_access_token
+from auth.token import created_access_token
 
 app = FastAPI()
 # Create a cursor object
@@ -77,7 +77,7 @@ class UserController:
                  token=None
              )
 
-        token = created_access_token({"id": results["id"]})
+        token = created_access_token({"name": results["name"]})
         return Responses.response_login(
             message="Success Login",
             status=status.HTTP_200_OK,

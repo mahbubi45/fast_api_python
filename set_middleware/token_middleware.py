@@ -1,20 +1,20 @@
-from fastapi import Request
-from starlette.middleware.base import BaseHTTPMiddleware
-from fastapi.responses import JSONResponse
-from jose import jwt, JWTError
+from fastapi import Request # type: ignore
+from starlette.middleware.base import BaseHTTPMiddleware # type: ignore
+from fastapi.responses import JSONResponse # type: ignore
+from jose import jwt, JWTError # type: ignore
 from datetime import datetime, timezone
-from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
 import os
 
 class TokenMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-
         load_dotenv()
         SECRET_KEY = os.getenv("SECRET_KEY")
         ALGORITHM = os.getenv("ALGORITHM")
 
         base_path= "/api/v1/"
-        public_paths = ["login", "register", "docs", "openapi.json"]
+        # tanpa jwt token
+        public_paths = ["login", "register", "docs", "openapi.json", "csrf"]
         allowed_path = [f"{base_path}{path}" for path in public_paths]
         
         if any(request.url.path.startswith(path) for path in allowed_path):
@@ -28,7 +28,6 @@ class TokenMiddleware(BaseHTTPMiddleware):
 
         token = auth_header.split(" ")[1]
         
-
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             exp = payload.get("exp")
